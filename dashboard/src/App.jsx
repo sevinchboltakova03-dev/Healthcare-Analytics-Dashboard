@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react"
 import Papa from "papaparse"
 
+import "./App.css"
+
+const DATA_PATH = `${import.meta.env.BASE_URL}data/`
+
 import {
   Users,
   DollarSign,
@@ -41,64 +45,72 @@ function App() {
   const [hospitalData, setHospitalData] = useState([])
 
   useEffect(() => {
-    // KPI DATA
-    Papa.parse("/data/kpi.csv", {
-      download: true,
-      header: true,
-      dynamicTyping: true,
-      complete: (results) => {
-        setKpis(results.data.filter((row) => row.Metric))
-      },
-    })
 
-    // MONTHLY ADMISSIONS
-    Papa.parse("/data/monthly_admissions.csv", {
-      download: true,
-      header: true,
-      dynamicTyping: true,
-      complete: (results) => {
-        setMonthlyData(
-          results.data.filter((row) => row.Month)
-        )
-      },
-    })
+  // KPI DATA
+  Papa.parse(`${DATA_PATH}kpi.csv`, {
+    download: true,
+    header: true,
+    dynamicTyping: true,
+    complete: (results) => {
+      setKpis(
+        results.data.filter((row) => row.Metric)
+      )
+    },
+  })
 
-    // ADMISSION TYPE
-    Papa.parse("/data/admission_distribution.csv", {
-      download: true,
-      header: true,
-      dynamicTyping: true,
-      complete: (results) => {
-        setAdmissionData(
-          results.data.filter((row) => row["Admission Type"])
-        )
-      },
-    })
+  // MONTHLY ADMISSIONS
+  Papa.parse(`${DATA_PATH}monthly_admissions.csv`, {
+    download: true,
+    header: true,
+    dynamicTyping: true,
+    complete: (results) => {
+      setMonthlyData(
+        results.data.filter((row) => row.Month)
+      )
+    },
+  })
 
-    // CONDITION REVENUE
-    Papa.parse("/data/condition_revenue.csv", {
-      download: true,
-      header: true,
-      dynamicTyping: true,
-      complete: (results) => {
-        setConditionData(
-          results.data.filter((row) => row["Medical Condition"])
+  // ADMISSION TYPE
+  Papa.parse(`${DATA_PATH}admission_distribution.csv`, {
+    download: true,
+    header: true,
+    dynamicTyping: true,
+    complete: (results) => {
+      setAdmissionData(
+        results.data.filter(
+          (row) => row["Admission Type"]
         )
-      },
-    })
+      )
+    },
+  })
 
-    // HOSPITAL REVENUE
-    Papa.parse("/data/top_hospitals_revenue.csv", {
-      download: true,
-      header: true,
-      dynamicTyping: true,
-      complete: (results) => {
-        setHospitalData(
-          results.data.filter((row) => row.Hospital)
+  // CONDITION REVENUE
+  Papa.parse(`${DATA_PATH}condition_revenue.csv`, {
+    download: true,
+    header: true,
+    dynamicTyping: true,
+    complete: (results) => {
+      setConditionData(
+        results.data.filter(
+          (row) => row["Medical Condition"]
         )
-      },
-    })
-  }, [])
+      )
+    },
+  })
+
+  // HOSPITAL REVENUE
+  Papa.parse(`${DATA_PATH}top_hospitals_revenue.csv`, {
+    download: true,
+    header: true,
+    dynamicTyping: true,
+    complete: (results) => {
+      setHospitalData(
+        results.data.filter((row) => row.Hospital)
+      )
+    },
+  })
+
+}, [])
 
   const getKpiValue = (metric) => {
     const item = kpis.find(
