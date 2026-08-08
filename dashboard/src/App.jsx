@@ -7,21 +7,28 @@ import {
   CalendarDays,
   Clock3,
   Activity,
-  Stethoscope,
-  ShieldCheck,
   TrendingUp,
+  PieChart as PieIcon,
+  Building2,
+  ShieldCheck,
 } from "lucide-react"
 
 import {
   ResponsiveContainer,
   LineChart,
   Line,
+  AreaChart,
+  Area,
   BarChart,
   Bar,
+  PieChart,
+  Pie,
+  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
+  Legend,
 } from "recharts"
 
 import "./App.css"
@@ -69,29 +76,28 @@ function App() {
     })
 
     // CONDITION REVENUE
-Papa.parse("/data/condition_revenue.csv", {
-  download: true,
-  header: true,
-  dynamicTyping: true,
-  complete: (results) => {
-    setConditionData(
-      results.data.filter((row) => row["Medical Condition"])
-    )
-  },
-})
+    Papa.parse("/data/condition_revenue.csv", {
+      download: true,
+      header: true,
+      dynamicTyping: true,
+      complete: (results) => {
+        setConditionData(
+          results.data.filter((row) => row["Medical Condition"])
+        )
+      },
+    })
 
-// HOSPITAL REVENUE
-Papa.parse("/data/top_hospitals_revenue.csv", {
-  download: true,
-  header: true,
-  dynamicTyping: true,
-  complete: (results) => {
-    setHospitalData(
-      results.data.filter((row) => row.Hospital)
-    )
-  },
-})
-
+    // HOSPITAL REVENUE
+    Papa.parse("/data/top_hospitals_revenue.csv", {
+      download: true,
+      header: true,
+      dynamicTyping: true,
+      complete: (results) => {
+        setHospitalData(
+          results.data.filter((row) => row.Hospital)
+        )
+      },
+    })
   }, [])
 
   const getKpiValue = (metric) => {
@@ -107,17 +113,34 @@ Papa.parse("/data/top_hospitals_revenue.csv", {
   const averageAge = getKpiValue("Average Age")
   const averageStay = getKpiValue("Average Stay")
 
+  const conditionColors = [
+    "#4da3ff",
+    "#5bc0be",
+    "#7b8cff",
+    "#8bd17c",
+    "#f6bd60",
+    "#ee7d78",
+  ]
+
+  const tooltipStyle = {
+    background: "#101d31",
+    border: "1px solid #29415f",
+    borderRadius: "8px",
+    color: "#ffffff",
+    fontSize: "10px",
+  }
+
   return (
     <div className="dashboard">
 
-      {/* HEADER */}
+      {/* ================= HEADER ================= */}
 
       <header className="topbar">
 
         <div className="brand">
 
           <div className="brand-icon">
-            <Activity size={21} />
+            <Activity size={20} />
           </div>
 
           <div>
@@ -135,27 +158,31 @@ Papa.parse("/data/top_hospitals_revenue.csv", {
       </header>
 
 
-      {/* FILTER BAR */}
+      {/* ================= FILTER BAR ================= */}
 
       <section className="filter-bar">
 
         <div className="filter-title">
           <span>Dashboard Overview</span>
+
           <small>
             Hospital performance & patient insights
           </small>
         </div>
 
         <div className="filter-group">
+
           <label>View</label>
 
           <select defaultValue="All Patients">
             <option>All Patients</option>
             <option>All Departments</option>
           </select>
+
         </div>
 
         <div className="filter-group">
+
           <label>Period</label>
 
           <select defaultValue="All Time">
@@ -163,12 +190,13 @@ Papa.parse("/data/top_hospitals_revenue.csv", {
             <option>Monthly</option>
             <option>Yearly</option>
           </select>
+
         </div>
 
       </section>
 
 
-      {/* KPI CARDS */}
+      {/* ================= KPI ================= */}
 
       <section className="kpi-grid">
 
@@ -178,7 +206,7 @@ Papa.parse("/data/top_hospitals_revenue.csv", {
             <span>Total Patients</span>
 
             <div className="kpi-icon">
-              <Users size={18} />
+              <Users size={16} />
             </div>
           </div>
 
@@ -199,7 +227,7 @@ Papa.parse("/data/top_hospitals_revenue.csv", {
             <span>Total Billing</span>
 
             <div className="kpi-icon">
-              <DollarSign size={18} />
+              <DollarSign size={16} />
             </div>
           </div>
 
@@ -220,7 +248,7 @@ Papa.parse("/data/top_hospitals_revenue.csv", {
             <span>Average Age</span>
 
             <div className="kpi-icon">
-              <CalendarDays size={18} />
+              <CalendarDays size={16} />
             </div>
           </div>
 
@@ -241,7 +269,7 @@ Papa.parse("/data/top_hospitals_revenue.csv", {
             <span>Average Stay</span>
 
             <div className="kpi-icon">
-              <Clock3 size={18} />
+              <Clock3 size={16} />
             </div>
           </div>
 
@@ -258,63 +286,56 @@ Papa.parse("/data/top_hospitals_revenue.csv", {
       </section>
 
 
-      {/* MAIN CONTENT */}
+      {/* ================= TOP ROW ================= */}
 
       <section className="main-grid">
 
 
-        {/* PATIENT VOLUME */}
+        {/* ADMISSION TREND */}
 
-        <div className="panel large-panel">
+        <div className="panel">
 
           <div className="panel-header">
 
             <div>
-              <h2>
-                Patient Volume Trend
-              </h2>
+              <h2>Admission Trend</h2>
 
               <p>
-                Monthly admission activity
+                Monthly patient admissions
               </p>
             </div>
 
             <div className="panel-icon">
-              <TrendingUp size={18} />
+              <TrendingUp size={16} />
             </div>
 
           </div>
 
-
           <div className="chart-container">
 
-            <ResponsiveContainer
-              width="100%"
-              height="100%"
-            >
+            <ResponsiveContainer width="100%" height="100%">
 
               <LineChart
                 data={monthlyData}
                 margin={{
-                  top: 10,
-                  right: 10,
-                  left: -10,
-                  bottom: 5,
+                  top: 8,
+                  right: 8,
+                  left: -20,
+                  bottom: 2,
                 }}
               >
 
                 <CartesianGrid
+                  stroke="#1b2d43"
                   strokeDasharray="3 3"
-                  stroke="#1d3048"
                   vertical={false}
                 />
 
                 <XAxis
                   dataKey="Month"
-                  stroke="#61748d"
                   tick={{
                     fill: "#71839d",
-                    fontSize: 9,
+                    fontSize: 8,
                   }}
                   tickLine={false}
                   axisLine={false}
@@ -322,30 +343,19 @@ Papa.parse("/data/top_hospitals_revenue.csv", {
                 />
 
                 <YAxis
-                  stroke="#61748d"
                   tick={{
                     fill: "#71839d",
-                    fontSize: 9,
+                    fontSize: 8,
                   }}
                   tickLine={false}
                   axisLine={false}
-                  width={40}
+                  width={38}
                 />
 
                 <Tooltip
-                  contentStyle={{
-                    background: "#101d31",
-                    border: "1px solid #29415f",
-                    borderRadius: "8px",
-                    color: "#ffffff",
-                    fontSize: "11px",
-                  }}
-                  labelStyle={{
-                    color: "#8fa4bd",
-                    marginBottom: "4px",
-                  }}
+                  contentStyle={tooltipStyle}
                   formatter={(value) => [
-                    `${value.toLocaleString()} patients`,
+                    `${Number(value).toLocaleString()} patients`,
                     "Admissions",
                   ]}
                 />
@@ -354,12 +364,13 @@ Papa.parse("/data/top_hospitals_revenue.csv", {
                   type="monotone"
                   dataKey="Patients"
                   stroke="#4da3ff"
-                  strokeWidth={2.5}
+                  strokeWidth={2.4}
                   dot={false}
                   activeDot={{
                     r: 5,
+                    fill: "#4da3ff",
+                    stroke: "#dceeff",
                     strokeWidth: 2,
-                    fill: "#0e1829",
                   }}
                 />
 
@@ -372,91 +383,171 @@ Papa.parse("/data/top_hospitals_revenue.csv", {
         </div>
 
 
-        {/* ADMISSION TYPE */}
+        {/* CONDITION REVENUE */}
 
         <div className="panel">
 
           <div className="panel-header">
 
             <div>
-              <h2>
-                Admission Type
-              </h2>
+              <h2>Condition Revenue</h2>
 
               <p>
-                Patients by admission type
+                Billing distribution by condition
               </p>
             </div>
 
             <div className="panel-icon">
-              <Stethoscope size={18} />
+              <PieIcon size={16} />
             </div>
 
           </div>
 
+          <div className="chart-container donut-layout">
+
+            <ResponsiveContainer width="100%" height="100%">
+
+              <PieChart>
+
+                <Pie
+                  data={conditionData}
+                  dataKey="Billing Amount"
+                  nameKey="Medical Condition"
+                  cx="42%"
+                  cy="50%"
+                  innerRadius="48%"
+                  outerRadius="70%"
+                  paddingAngle={3}
+                  stroke="none"
+                >
+
+                  {conditionData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={
+                        conditionColors[
+                          index % conditionColors.length
+                        ]
+                      }
+                    />
+                  ))}
+
+                </Pie>
+
+                <Tooltip
+                  contentStyle={tooltipStyle}
+                  formatter={(value) => [
+                    `$${(Number(value) / 1000000).toFixed(1)}M`,
+                    "Billing",
+                  ]}
+                />
+
+                <Legend
+                  layout="vertical"
+                  verticalAlign="middle"
+                  align="right"
+                  iconType="circle"
+                  iconSize={6}
+                  wrapperStyle={{
+                    fontSize: "8px",
+                    color: "#91a2b7",
+                    lineHeight: "18px",
+                  }}
+                />
+
+              </PieChart>
+
+            </ResponsiveContainer>
+
+          </div>
+
+        </div>
+
+
+        {/* HOSPITAL REVENUE */}
+
+        <div className="panel">
+
+          <div className="panel-header">
+
+            <div>
+              <h2>Hospital Revenue</h2>
+
+              <p>
+                Top hospitals by billing
+              </p>
+            </div>
+
+            <div className="panel-icon">
+              <Building2 size={16} />
+            </div>
+
+          </div>
 
           <div className="chart-container">
 
-            <ResponsiveContainer
-              width="100%"
-              height="100%"
-            >
+            <ResponsiveContainer width="100%" height="100%">
 
               <BarChart
-                data={admissionData}
+                data={hospitalData}
+                layout="vertical"
                 margin={{
-                  top: 10,
-                  right: 10,
-                  left: -15,
-                  bottom: 5,
+                  top: 0,
+                  right: 8,
+                  left: 4,
+                  bottom: 0,
                 }}
               >
 
                 <CartesianGrid
+                  stroke="#1b2d43"
                   strokeDasharray="3 3"
-                  stroke="#1d3048"
-                  vertical={false}
+                  horizontal={false}
                 />
 
                 <XAxis
-                  dataKey="Admission Type"
-                  stroke="#61748d"
+                  type="number"
                   tick={{
                     fill: "#71839d",
-                    fontSize: 9,
+                    fontSize: 7,
                   }}
                   tickLine={false}
                   axisLine={false}
+                  tickFormatter={(value) =>
+                    `$${(value / 1000000).toFixed(1)}M`
+                  }
                 />
 
                 <YAxis
-                  stroke="#61748d"
+                  type="category"
+                  dataKey="Hospital"
+                  width={72}
                   tick={{
-                    fill: "#71839d",
-                    fontSize: 9,
+                    fill: "#8fa1b6",
+                    fontSize: 7,
                   }}
                   tickLine={false}
                   axisLine={false}
                 />
 
                 <Tooltip
-                  contentStyle={{
-                    background: "#101d31",
-                    border: "1px solid #29415f",
-                    borderRadius: "8px",
-                    color: "#ffffff",
-                    fontSize: "11px",
-                  }}
+                  contentStyle={tooltipStyle}
                   formatter={(value) => [
-                    `${value.toLocaleString()} patients`,
-                    "Patients",
+                    `$${Number(value).toLocaleString(
+                      undefined,
+                      {
+                        maximumFractionDigits: 0,
+                      }
+                    )}`,
+                    "Billing",
                   ]}
                 />
 
                 <Bar
-                  dataKey="Patients"
-                  fill="#4da3ff"
-                  radius={[5, 5, 0, 0]}
+                  dataKey="Billing Amount"
+                  fill="#5aa9ff"
+                  radius={[0, 4, 4, 0]}
+                  barSize={7}
                 />
 
               </BarChart>
@@ -470,269 +561,222 @@ Papa.parse("/data/top_hospitals_revenue.csv", {
       </section>
 
 
-      {/* BOTTOM CONTENT */}
+      {/* ================= BOTTOM ROW ================= */}
 
       <section className="bottom-grid">
 
 
-        {/* CONDITION REVENUE */}
+        {/* PATIENT VOLUME */}
 
         <div className="panel">
 
-  <div className="panel-header">
+          <div className="panel-header">
 
-    <div>
-      <h2>Condition Revenue</h2>
-      <p>Billing by medical condition</p>
-    </div>
+            <div>
+              <h2>Patient Volume Trend</h2>
 
-  </div>
+              <p>
+                Long-term admission activity
+              </p>
+            </div>
 
-  <div className="mini-chart">
+            <div className="panel-icon">
+              <Users size={16} />
+            </div>
 
-    <ResponsiveContainer width="100%" height="100%">
-      <BarChart
-        data={conditionData}
-        layout="vertical"
-        margin={{
-          top: 0,
-          right: 10,
-          left: 10,
-          bottom: 0,
-        }}
-      >
+          </div>
 
-        <CartesianGrid
-          strokeDasharray="3 3"
-          stroke="#1d3048"
-          horizontal={false}
-        />
+          <div className="chart-container">
 
-        <XAxis
-          type="number"
-          tick={{
-            fill: "#71839d",
-            fontSize: 8,
-          }}
-          tickLine={false}
-          axisLine={false}
-          tickFormatter={(value) =>
-            `$${(value / 1000000).toFixed(0)}M`
-          }
-        />
+            <ResponsiveContainer width="100%" height="100%">
 
-        <YAxis
-          type="category"
-          dataKey="Medical Condition"
-          width={72}
-          tick={{
-            fill: "#9aabc0",
-            fontSize: 8,
-          }}
-          tickLine={false}
-          axisLine={false}
-        />
+              <AreaChart
+                data={monthlyData}
+                margin={{
+                  top: 8,
+                  right: 8,
+                  left: -20,
+                  bottom: 2,
+                }}
+              >
 
-        <Tooltip
-          contentStyle={{
-            background: "#101d31",
-            border: "1px solid #29415f",
-            borderRadius: "8px",
-            color: "#ffffff",
-            fontSize: "10px",
-          }}
-          formatter={(value) => [
-            `$${(value / 1000000).toFixed(2)}M`,
-            "Billing",
-          ]}
-        />
+                <defs>
 
-        <Bar
-          dataKey="Billing Amount"
-          fill="#4da3ff"
-          radius={[0, 5, 5, 0]}
-          barSize={12}
-        />
+                  <linearGradient
+                    id="patientGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
 
-      </BarChart>
-    </ResponsiveContainer>
+                    <stop
+                      offset="0%"
+                      stopColor="#4da3ff"
+                      stopOpacity={0.30}
+                    />
 
-  </div>
+                    <stop
+                      offset="100%"
+                      stopColor="#4da3ff"
+                      stopOpacity={0}
+                    />
 
-</div>
+                  </linearGradient>
 
+                </defs>
 
-        {/* HOSPITAL REVENUE */}
+                <CartesianGrid
+                  stroke="#1b2d43"
+                  strokeDasharray="3 3"
+                  vertical={false}
+                />
 
-        <div className="panel">
+                <XAxis
+                  dataKey="Month"
+                  tick={{
+                    fill: "#71839d",
+                    fontSize: 8,
+                  }}
+                  tickLine={false}
+                  axisLine={false}
+                  interval={5}
+                />
 
-  <div className="panel-header">
+                <YAxis
+                  tick={{
+                    fill: "#71839d",
+                    fontSize: 8,
+                  }}
+                  tickLine={false}
+                  axisLine={false}
+                  width={38}
+                />
 
-    <div>
-      <h2>Hospital Revenue</h2>
-      <p>Top hospitals by billing</p>
-    </div>
+                <Tooltip
+                  contentStyle={tooltipStyle}
+                  formatter={(value) => [
+                    `${Number(value).toLocaleString()} patients`,
+                    "Patients",
+                  ]}
+                />
 
-  </div>
+                <Area
+                  type="monotone"
+                  dataKey="Patients"
+                  stroke="#4da3ff"
+                  strokeWidth={2}
+                  fill="url(#patientGradient)"
+                  dot={false}
+                  activeDot={{
+                    r: 4,
+                    fill: "#4da3ff",
+                  }}
+                />
 
-  <div className="mini-chart">
+              </AreaChart>
 
-    <ResponsiveContainer width="100%" height="100%">
-      <BarChart
-        data={hospitalData}
-        layout="vertical"
-        margin={{
-          top: 0,
-          right: 10,
-          left: 8,
-          bottom: 0,
-        }}
-      >
+            </ResponsiveContainer>
 
-        <CartesianGrid
-          strokeDasharray="3 3"
-          stroke="#1d3048"
-          horizontal={false}
-        />
+          </div>
 
-        <XAxis
-          type="number"
-          tick={{
-            fill: "#71839d",
-            fontSize: 8,
-          }}
-          tickLine={false}
-          axisLine={false}
-          tickFormatter={(value) =>
-            `$${(value / 1000000).toFixed(1)}M`
-          }
-        />
-
-        <YAxis
-          type="category"
-          dataKey="Hospital"
-          width={75}
-          tick={{
-            fill: "#9aabc0",
-            fontSize: 7,
-          }}
-          tickLine={false}
-          axisLine={false}
-        />
-
-        <Tooltip
-          contentStyle={{
-            background: "#101d31",
-            border: "1px solid #29415f",
-            borderRadius: "8px",
-            color: "#ffffff",
-            fontSize: "10px",
-          }}
-          formatter={(value) => [
-            `$${Number(value).toLocaleString(undefined, {
-              maximumFractionDigits: 0,
-            })}`,
-            "Billing",
-          ]}
-        />
-
-        <Bar
-          dataKey="Billing Amount"
-          fill="#4da3ff"
-          radius={[0, 5, 5, 0]}
-          barSize={7}
-        />
-
-      </BarChart>
-    </ResponsiveContainer>
-
-  </div>
-
-</div>
+        </div>
 
 
-       {/* BUSINESS INSIGHTS */}
+        {/* BUSINESS INSIGHTS */}
 
-<div className="panel insights-panel">
+        <div className="panel insights-panel">
 
-  <div className="panel-header">
+          <div className="panel-header">
 
-    <div>
-      <h2>Business Insights</h2>
+            <div>
+              <h2>Business Insights</h2>
 
-      <p>
-        Key findings from healthcare data
-      </p>
-    </div>
+              <p>
+                Key findings from healthcare data
+              </p>
+            </div>
 
-    <div className="panel-icon">
-      <ShieldCheck size={18} />
-    </div>
+            <div className="panel-icon">
+              <ShieldCheck size={16} />
+            </div>
 
-  </div>
-
-
-  <div className="insight-list">
-
-    <div className="insight-item">
-
-      <span>01</span>
-
-      <p>
-        <strong>Insurance Revenue Leader</strong>
-        Cigna generated the highest billing at
-        approximately $287.1M.
-      </p>
-
-    </div>
+          </div>
 
 
-    <div className="insight-item">
+          <div className="insight-list">
 
-      <span>02</span>
+            <div className="insight-item">
 
-      <p>
-        <strong>Hospital Revenue Leader</strong>
-        Johnson PLC recorded the highest billing
-        among top hospitals at $1.08M.
-      </p>
+              <span>01</span>
+
+              <p>
+                <strong>
+                  Insurance Revenue Leader
+                </strong>
+
+                Cigna generated the highest billing
+                at approximately $287.1M.
+              </p>
+
+            </div>
+
+
+            <div className="insight-item">
+
+              <span>02</span>
+
+              <p>
+                <strong>
+                  Hospital Revenue Leader
+                </strong>
+
+                Johnson PLC recorded the highest
+                billing among top hospitals at $1.08M.
+              </p>
+
+            </div>
+
+
+            <div className="insight-item">
+
+              <span>03</span>
+
+              <p>
+                <strong>
+                  Test Results
+                </strong>
+
+                Abnormal results represent the largest
+                test-result group with 18,627 patients.
+              </p>
+
+            </div>
+
+
+            <div className="insight-item">
+
+              <span>04</span>
+
+              <p>
+                <strong>
+                  Admission Pattern
+                </strong>
+
+                Elective admissions lead slightly
+                with 18,655 patients.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
 
     </div>
-
-
-    <div className="insight-item">
-
-      <span>03</span>
-
-      <p>
-        <strong>Test Results</strong>
-        Abnormal results represent the largest
-        test-result group with 18,627 patients.
-      </p>
-
-    </div>
-
-
-    <div className="insight-item">
-
-      <span>04</span>
-
-      <p>
-        <strong>Admission Pattern</strong>
-        Elective admissions lead slightly with
-        18,655 patients.
-      </p>
-
-    </div>
-
-  </div>
-
-</div>
-
-</section>
-
-</div>
-)
+  )
 }
 
 export default App
